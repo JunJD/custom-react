@@ -1,49 +1,17 @@
-<!-- multi-repo -->
-每个库有自己独立的仓库
+# 手写react
 
+[工程化架构搭建](%E6%89%8B%E5%86%99react%201946c5f036c04a04b000b15a393e03bf/%E5%B7%A5%E7%A8%8B%E5%8C%96%E6%9E%B6%E6%9E%84%E6%90%AD%E5%BB%BA%2038aaa993900f448ba9bf33456b7e3f90.md)
 
-<!-- Mono-repo -->
-方便协同管理不同独立库的生命周期
+[jsx转换与打包](%E6%89%8B%E5%86%99react%201946c5f036c04a04b000b15a393e03bf/jsx%E8%BD%AC%E6%8D%A2%E4%B8%8E%E6%89%93%E5%8C%85%2024dfa3e9cd8c4325a39d12e6ab3695a6.md)
 
+[初探Reconciler](%E6%89%8B%E5%86%99react%201946c5f036c04a04b000b15a393e03bf/%E5%88%9D%E6%8E%A2Reconciler%20956b83df90e64e6b8a06fc74a1ec11e1.md)
 
-parser 用什么样的规则将ts解析成抽象语法树
+[如何触发更新](%E6%89%8B%E5%86%99react%201946c5f036c04a04b000b15a393e03bf/%E5%A6%82%E4%BD%95%E8%A7%A6%E5%8F%91%E6%9B%B4%E6%96%B0%20c77c8ec4c7cf4133bb150af67b70a186.md)
 
-eslint做语法检查，prettier做格式检查，husky提交git的
-生命周期
+[实现首屏渲染](%E6%89%8B%E5%86%99react%201946c5f036c04a04b000b15a393e03bf/%E5%AE%9E%E7%8E%B0%E9%A6%96%E5%B1%8F%E6%B8%B2%E6%9F%93%20ca4d9700e35444ebb92597f9fea48f19.md)
 
-prettie做格式检查
+[实现useState](%E6%89%8B%E5%86%99react%201946c5f036c04a04b000b15a393e03bf/%E5%AE%9E%E7%8E%B0useState%20b9d3110a825542eca97cc83851b725d9.md)
 
-husky做git提交检查
-0. 安装：pnpm i husky -D -w  / npx husky install; lint配置:    "lint": "eslint --ext .ts,.tsx,.js,.jsx --fix --quiet ./packages"
-1. 提交前执行配置：npx husky .husky/pre-commit "pnpm lint"
-2. 
-### commit提交规范检查配置：pnpm i @commitlint/config-conventional -D -w
-### 新建配置文件.commitlintrc.js 【module.exports = { extends: ['@commitlint/config-conventional']}】
-### npx husky add .husky/commit-msg "npx --no-install commitlint -e $HUSKY_GIT_PARAMS"
-提交的类型：
-feat: 添加新功能
-fix: 修复bug
-chore: 一些不影响功能的修改
-docs: 专指文档的修改
-perf: 性能优化方面
-refactor: 代码重构
-test: 添加一些测试代码等
+[初探update阶段](%E6%89%8B%E5%86%99react%201946c5f036c04a04b000b15a393e03bf/%E5%88%9D%E6%8E%A2update%E9%98%B6%E6%AE%B5%2085bfe9586b0944c7aa368f28b7df031e.md)
 
-3. ts配置
-
-4. rollup 轻量打包工具
-### 插件使用 
-rollup-plugin-typescript2 是一个 Rollup 插件，用于将 TypeScript 代码构建为 JavaScript 代码。它允许使用 TypeScript 语法进行编写和类型检查，同时将其转换为 JavaScript 代码。使用该插件可以更加方便地进行模块化开发，提高代码质量和可维护性。
-
-@rollup/plugin-commonjs 是一个 Rollup 插件，用于在 Rollup 中使用 CommonJS 模块加载器。它将 CommonJS 模块转换为 ES6 模块格式，以便在 Rollup 中使用。这个插件特别适用于在 Rollup 中使用一些基于 CommonJS 模块规范编写的模块，例如一些 Node.js 模块等。通过使用 @rollup/plugin-commonjs 插件，可以让这些模块更加容易地在 Rollup 中使用，并且可以获得更好的代码优化和打包结果。
-
-
-5. 创建script \ rollup
-
-
-
-
-
-# jsx实现
-
-
+[事件模型](%E6%89%8B%E5%86%99react%201946c5f036c04a04b000b15a393e03bf/%E4%BA%8B%E4%BB%B6%E6%A8%A1%E5%9E%8B%20936be2978b7f428481e135b9fec51f11.md)
