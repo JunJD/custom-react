@@ -15,6 +15,7 @@ import {
     Update,
 } from "./fiberFlags";
 import {
+    Fragment,
     FunctionComponent,
     HostComponent,
     HostRoot,
@@ -149,21 +150,47 @@ function getHostSibling(fiber: FiberNode) {
     }
 }
 
+function recordHostChildToDelete(
+    childrenToDelete: FiberNode[],
+    unmountFiber: FiberNode
+) {
+    // 1.找到第一个rootHost节点
+
+    const lastOne = childrenToDelete[childrenToDelete.length - 1];
+
+    if (!lastOne) {
+        childrenToDelete.push(unmountFiber);
+    } else {
+        console.log("+++");
+
+        // 2.每找到一个Host节点，判断一下第一步找到的节点的兄弟节点(同级)
+        let node = lastOne.sibling;
+        while (node !== null) {
+            if (unmountFiber === node) {
+                childrenToDelete.push(unmountFiber);
+            }
+            node = node.sibling;
+        }
+    }
+}
+
 function commitDeletion(childToDelete: FiberNode) {
-    let rootHostNode: FiberNode | null = null;
+    const rootChildToDelete: FiberNode[] = [];
+    // let rootHostNode: FiberNode | null = null;
     commitNestedComponent(childToDelete, (unmountFiber) => {
         switch (unmountFiber.tag) {
             case HostComponent:
-                if (rootHostNode === null) {
-                    rootHostNode = unmountFiber;
-                }
+                recordHostChildToDelete(rootChildToDelete, unmountFiber);
+                // if (rootHostNode === null) {
+                //     rootHostNode = unmountFiber;
+                // }
                 // Todo 解绑ref
                 return;
             case HostText:
-                if (rootHostNode === null) {
-                    rootHostNode = unmountFiber;
-                }
+                recordHostChildToDelete(rootChildToDelete, unmountFiber);
                 return;
+            case Fragment:
+                break;
             case FunctionComponent:
                 // TODO useEffect unmount、解绑ref
                 break;
@@ -175,10 +202,12 @@ function commitDeletion(childToDelete: FiberNode) {
         }
     });
 
-    if (rootHostNode !== null) {
+    if (rootChildToDelete.length !== 0) {
         const hostParent = getHostParent(childToDelete);
         if (hostParent !== null) {
-            removeChild(hostParent, (rootHostNode as FiberNode).stateNode);
+            rootChildToDelete.forEach((node) => {
+                removeChild(hostParent, node.stateNode);
+            });
         }
     }
     childToDelete.return = null;

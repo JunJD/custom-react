@@ -2,6 +2,7 @@ import { ReactElementType } from "shared/ReactTypes";
 import { FiberNode } from "./fiber";
 import { UpdateQueue, processUpdateQueue } from "./updateQueue";
 import {
+    Fragment,
     FunctionComponent,
     HostComponent,
     HostRoot,
@@ -27,9 +28,10 @@ export const beginWork = (WorkInProgress: FiberNode) => {
             return updateHostComponent(WorkInProgress);
         case HostText:
             return null;
-        // return updateHostText(workInProgress);
         case FunctionComponent:
             return updateFunctionComponent(WorkInProgress);
+        case Fragment:
+            return updateFragment(WorkInProgress);
         default:
             if (__DEV__) {
                 console.warn("未实现的tag");
@@ -75,6 +77,12 @@ function updateHostComponent(workInProgress: FiberNode) {
 
 function updateFunctionComponent(workInProgress: FiberNode) {
     const nextChildren = renderWithHooks(workInProgress);
+    reconcileChildren(workInProgress, nextChildren);
+    return workInProgress.child;
+}
+
+function updateFragment(workInProgress: FiberNode) {
+    const nextChildren = workInProgress.pendingProps;
     reconcileChildren(workInProgress, nextChildren);
     return workInProgress.child;
 }

@@ -1,5 +1,10 @@
 import { Props, Key, Ref, ReactElementType } from "shared/ReactTypes";
-import { FunctionComponent, HostComponent, WorkTag } from "./workTags";
+import {
+    Fragment,
+    FunctionComponent,
+    HostComponent,
+    WorkTag,
+} from "./workTags";
 import { Flags, NoFlags } from "./fiberFlags";
 import { Container } from "hostConfig";
 
@@ -117,5 +122,10 @@ export function createFiberFormElement(element: ReactElementType) {
     const fiber = new FiberNode(fiberTag, props, key);
     fiber.type = type;
 
+    return fiber;
+}
+
+export function createFiberFormFragment(elements: any[], key: Key) {
+    const fiber = new FiberNode(Fragment, elements, key);
     return fiber;
 }
