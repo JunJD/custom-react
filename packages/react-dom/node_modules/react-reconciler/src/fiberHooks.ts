@@ -114,7 +114,7 @@ function updateState<State>(): [State, Dispatch<State>] {
 }
 
 // 和updateContainer类似
-async function dispatchSetState<State>(
+function dispatchSetState<State>(
     fiber: FiberNode,
     updateQueue: UpdateQueue<State>,
     action: Action<State>

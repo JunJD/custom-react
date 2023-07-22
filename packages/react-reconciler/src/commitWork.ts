@@ -1,7 +1,9 @@
 import {
     Container,
+    Instance,
     TextInstance,
     appendChildToContainer,
+    insertChildToContainer,
     removeChild,
 } from "hostConfig";
 import { FiberNode, FiberRootNode } from "./fiber";
@@ -52,7 +54,6 @@ export const commitMutationEffects = (finishedWork: FiberNode) => {
 
 function commitMutationEffectsOnFiber(finishedWork: FiberNode) {
     const flags = finishedWork.flags;
-
     if ((flags & Placement) !== NoFlags) {
         // 存在Placement操作
         commitPlacement(finishedWork);
@@ -80,10 +81,71 @@ function commitPlacement(finishedWork: FiberNode) {
     if (__DEV__) {
         console.warn("执行placement操作");
     }
+
+    // parent DOM
     const hostParent = getHostParent(finishedWork);
+
+    /**
+     * Placement同时对应
+     * -- 移动
+     * -- 插入
+     * 对于插入操作，之前对应的DOM方法是parentNode.appendChild,
+     * 现在为了实现移动操作，需要支持parentNode.insertBefore
+     */
+
+    // parentNode.insertBefore需要找到[目标兄弟Host节点]，要考虑2个因素
+    // 1. 可能并不是目标fiber的直接兄弟节点
+    // 2. 不是稳定的Host节点不能作为[目标兄弟Host节点]
+    const sibling = getHostSibling(finishedWork);
+    console.table({ finishedWork, sibling });
+
     if (hostParent !== null) {
         // 找到finishedwork的dom append parent Dom中
-        appendPlacementNodeIntoContainer(finishedWork, hostParent);
+        inertOrAppendPlacementNodeIntoContainer(
+            finishedWork,
+            hostParent,
+            sibling
+        );
+    }
+}
+
+function getHostSibling(fiber: FiberNode) {
+    let node: FiberNode = fiber;
+    // eslint-disable-next-line no-constant-condition
+    findSibling: while (true) {
+        while (node.sibling === null) {
+            const parent = node.return;
+            if (
+                parent === null ||
+                parent.tag === HostComponent ||
+                parent.tag === HostRoot
+            ) {
+                return null;
+            }
+            node = parent;
+        }
+
+        node.sibling.return = node.return;
+        node = node.sibling;
+        // 直接sibling不是目标sibling继续向下找
+        while (node.tag !== HostText && node.tag !== HostComponent) {
+            // 向下遍历，找子孙节点
+            if ((node.flags & Placement) !== NoFlags) {
+                // 节点是不稳定的
+                continue findSibling;
+            }
+            if (node.child === null) {
+                continue findSibling;
+            } else {
+                node.child.return = node;
+                node = node.child;
+            }
+        }
+
+        if ((node.flags & Placement) === NoFlags) {
+            console.log(node.stateNode, "node.stateNode");
+            return node.stateNode;
+        }
     }
 }
 
@@ -177,7 +239,7 @@ function commitUpdate(finishedWork: FiberNode) {
     const hostParent = getHostParent(finishedWork);
     if (hostParent !== null) {
         // 找到finishedwork的dom append parent Dom中
-        appendPlacementNodeIntoContainer(finishedWork, hostParent);
+        inertOrAppendPlacementNodeIntoContainer(finishedWork, hostParent);
     }
 }
 
@@ -204,22 +266,28 @@ function getHostParent(fiber: FiberNode): Container | null {
     return null;
 }
 
-function appendPlacementNodeIntoContainer(
+function inertOrAppendPlacementNodeIntoContainer(
     finishedWork: FiberNode,
-    hostParent: Container
+    hostParent: Container,
+    before?: Instance
 ) {
     if (finishedWork.tag === HostComponent || finishedWork.tag === HostText) {
-        appendChildToContainer(hostParent, finishedWork.stateNode);
+        if (before) {
+            insertChildToContainer(finishedWork.stateNode, hostParent, before);
+        } else {
+            appendChildToContainer(hostParent, finishedWork.stateNode);
+        }
+
         return;
     }
 
     const child = finishedWork.child;
     if (child !== null) {
-        appendPlacementNodeIntoContainer(child, hostParent);
+        inertOrAppendPlacementNodeIntoContainer(child, hostParent);
         let sibling = child.sibling;
 
         while (sibling !== null) {
-            appendPlacementNodeIntoContainer(sibling, hostParent);
+            inertOrAppendPlacementNodeIntoContainer(sibling, hostParent);
             sibling = sibling.sibling;
         }
     }

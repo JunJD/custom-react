@@ -84,7 +84,6 @@ function reconcileChildren(
     children?: ReactElementType
 ) {
     const current = WorkInProgress.alternate;
-
     if (current !== null) {
         // update
         WorkInProgress.child = reconcileChildFibers(

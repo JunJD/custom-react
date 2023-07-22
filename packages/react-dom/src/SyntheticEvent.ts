@@ -83,6 +83,7 @@ function getEventCallbackNameFormEventType(
     eventType: string
 ): string[] | undefined {
     return {
+        // [捕获阶段, 冒泡阶段]
         click: ["onClickCapture", "onClick"],
     }[eventType];
 }

@@ -30,3 +30,11 @@ export function removeChild(
 }
 
 export const appendChildToContainer = appendInitialChild;
+
+export function insertChildToContainer(
+    child: Instance,
+    container: Container,
+    before: Instance
+) {
+    container.insertBefore(child, before);
+}

@@ -60,16 +60,17 @@ export const jsx = (
     return ReactElement(type, key, ref, props);
 };
 
-export const jsxDEV = (type: ElementType, config: any) => {
-    let key: Key = null;
+export const jsxDEV = (type: ElementType, config: any, key: Key) => {
     const props: Props = {};
     let ref: Ref = null;
+
     for (const prop in config) {
         const val = config[prop];
-        if (prop == "key") {
-            if (val !== undefined) key = "ding" + val;
-            continue;
-        }
+        // react当前源码key在第三个入参上
+        // if (prop == "key") {
+        //     if (val !== undefined) key = "ding" + val;
+        //     continue;
+        // }
         if (prop == "ref") {
             if (val !== undefined) ref = val;
             continue;
