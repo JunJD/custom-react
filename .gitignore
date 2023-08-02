@@ -1,1 +1,4 @@
 /node_modules
+/packages/react/node_modules
+/packages/react-reconciler/node_modules
+/packages/react-dom/node_modules
