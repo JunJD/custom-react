@@ -125,7 +125,7 @@ function dispatchSetState<State>(
     // 把更新状态添加到更新队列
     enqueueUpdate(updateQueue, update);
 
-    scheduleUpdateOnFiber(fiber);
+    scheduleUpdateOnFiber(fiber, lane);
 }
 
 function mountWorkInProgressHook(): Hook {

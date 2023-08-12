@@ -3,6 +3,7 @@ import { commitMutationEffects } from "./commitWork";
 import { completeWork } from "./completeWork";
 import { FiberNode, FiberRootNode, createWorkInProgress } from "./fiber";
 import { MutationMask, NoFlags } from "./fiberFlags";
+import { Lane, NoLane, SyncLane, getHighestPriorityLane, mergeLanes } from "./fiberLanes";
 import { HostRoot } from "./workTags";
 
 let WorkInProgress: FiberNode | null;
@@ -17,10 +18,33 @@ function prepareFreshStack(root: FiberRootNode) {
 /**
  * 在fibel中调度update
  */
-export function scheduleUpdateOnFiber(fiber: FiberNode) {
+export function scheduleUpdateOnFiber(fiber: FiberNode, lane: Lane) {
     // 调度
     const root = markUpdateFromFiberToRoot(fiber);
-    renderRoot(root);
+    // 记录当前lane放在FiberRootNode中
+    markUpateOnFiberToRoot(root, lane)
+
+    // renderRoot(root);
+    ensureRootIsScheduled(root)
+}
+
+function ensureRootIsScheduled(root: FiberRootNode) {
+    const updateLane = getHighestPriorityLane(root.pendingLanes)
+
+    if (updateLane === NoLane) {
+        return
+    }
+
+    if (updateLane === SyncLane) {
+        // 用微任务调度
+
+    } else {
+        // react有很多优先级，用宏任务调度
+    }
+}
+
+function markUpateOnFiberToRoot(root: FiberRootNode, lane: Lane) {
+    root.pendingLanes = mergeLanes(root.pendingLanes, lane)
 }
 
 /**

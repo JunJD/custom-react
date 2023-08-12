@@ -7,6 +7,7 @@ import {
 } from "./workTags";
 import { Flags, NoFlags } from "./fiberFlags";
 import { Container } from "hostConfig";
+import { Lane, Lanes, NoLane, NoLanes } from "./fiberLanes";
 
 export class FiberNode {
     tag: WorkTag;
@@ -73,11 +74,15 @@ export class FiberRootNode {
     // 指向更新完成以后的第一个fiberNode节点，...双缓存技术
     finishedWork: FiberNode | null;
 
+    pendingLanes: Lanes;
+    finishedLane: Lane;
     constructor(container: Container, hostRootFiber: FiberNode) {
         this.container = container;
         this.current = hostRootFiber;
         hostRootFiber.stateNode = this;
         this.finishedWork = null;
+        this.pendingLanes = NoLanes;
+        this.finishedLane = NoLane;
     }
 }
 
