@@ -14,11 +14,25 @@ function APP() {
             <ul
                 onClick={() => {
                     setNum(num + 1);
+                    setNum(num + 1);
+                    setNum(num + 1);
+                    console.log('同步', document.querySelector('li')?.innerText);
+                    Promise.resolve().then(() => {
+                        console.log('micro', document.querySelector('li')?.innerText)
+                    })
+                    setTimeout(() => {
+                        console.log('宏任务', document.querySelector('li')?.innerText)
+                    }, 0);
+                    console.log('start');
+                    // for (const item of new Array(100).fill(null)) {
+                    //     setNum(num + item);
+                    // }
+
                 }}
             >
                 {arr}
             </ul>
-            <li>1212</li>
+            <li>{num}</li>
         </>
     );
 }

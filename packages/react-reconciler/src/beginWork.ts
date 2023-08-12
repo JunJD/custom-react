@@ -91,7 +91,13 @@ function reconcileChildren(
     WorkInProgress: FiberNode,
     children?: ReactElementType
 ) {
+    console.log(WorkInProgress, '我是fiberRoot吗');
+
     const current = WorkInProgress.alternate;
+    if (current !== null) {
+        console.log('是的，你是的')
+    }
+
     if (current !== null) {
         // update
         WorkInProgress.child = reconcileChildFibers(
