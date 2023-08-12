@@ -10,6 +10,7 @@ import {
 } from "./updateQueue";
 import { Action } from "shared/ReactTypes";
 import { scheduleUpdateOnFiber } from "./workLoop";
+import { requestUpdateLane } from "./fiberLanes";
 
 let currentlyRenderingFiber: FiberNode | null = null;
 
@@ -119,7 +120,8 @@ function dispatchSetState<State>(
     updateQueue: UpdateQueue<State>,
     action: Action<State>
 ) {
-    const update = createUpdate(action);
+    const lane = requestUpdateLane()
+    const update = createUpdate(action, lane);
     // 把更新状态添加到更新队列
     enqueueUpdate(updateQueue, update);
 
