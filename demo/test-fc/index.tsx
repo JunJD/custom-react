@@ -13,9 +13,9 @@ function APP() {
         <>
             <ul
                 onClick={() => {
-                    setNum(num + 1);
-                    setNum(num + 1);
-                    setNum(num + 1);
+                    setNum(num => num + 1);
+                    setNum(num => num + 1);
+                    setNum(num => num + 1);
                     console.log('同步', document.querySelector('li')?.innerText);
                     Promise.resolve().then(() => {
                         console.log('micro', document.querySelector('li')?.innerText)

@@ -10,17 +10,18 @@ import {
 } from "./workTags";
 import { mountChildFibers, reconcileChildFibers } from "./childFibers";
 import { renderWithHooks } from "./fiberHooks";
+import { Lane } from "./fiberLanes";
 
 /**
  * @description 该方法会根据传入的Fiber节点创建子Fiber节点，并将这两个Fiber节点连接起来
  */
-export const beginWork = (WorkInProgress: FiberNode) => {
+export const beginWork = (WorkInProgress: FiberNode, renderLane: Lane) => {
     switch (WorkInProgress.tag) {
         case HostRoot:
             /**
              * @description 计算状态的最新值，创造子fiberNode
              */
-            return updateHostRoot(WorkInProgress);
+            return updateHostRoot(WorkInProgress, renderLane);
         case HostComponent:
             /**
              * @description 创造子fiberNode
@@ -29,7 +30,7 @@ export const beginWork = (WorkInProgress: FiberNode) => {
         case HostText:
             return null;
         case FunctionComponent:
-            return updateFunctionComponent(WorkInProgress);
+            return updateFunctionComponent(WorkInProgress, renderLane);
         case Fragment:
             return updateFragment(WorkInProgress);
         default:
@@ -42,7 +43,7 @@ export const beginWork = (WorkInProgress: FiberNode) => {
     return null;
 };
 
-function updateHostRoot(WorkInProgress: FiberNode) {
+function updateHostRoot(WorkInProgress: FiberNode, renderLane: Lane) {
     // 获取初始状态
     const baseState = WorkInProgress.memorizedState;
     // 获取更新队列
@@ -52,7 +53,7 @@ function updateHostRoot(WorkInProgress: FiberNode) {
     // 清空绑定的状态
     updateQueue.shared.pending = null;
     // 消费状态
-    const { memorizedState } = processUpdateQueue(baseState, pending);
+    const { memorizedState } = processUpdateQueue(baseState, pending, renderLane);
     // 绑定新的状态
     WorkInProgress.memorizedState = memorizedState;
     // tag为hostRoot时 memorizedState就是子element
@@ -75,8 +76,8 @@ function updateHostComponent(workInProgress: FiberNode) {
 //     return workInProgress.child;
 // }
 
-function updateFunctionComponent(workInProgress: FiberNode) {
-    const nextChildren = renderWithHooks(workInProgress);
+function updateFunctionComponent(workInProgress: FiberNode, renderLane: Lane) {
+    const nextChildren = renderWithHooks(workInProgress, renderLane);
     reconcileChildren(workInProgress, nextChildren);
     return workInProgress.child;
 }
@@ -91,11 +92,9 @@ function reconcileChildren(
     WorkInProgress: FiberNode,
     children?: ReactElementType
 ) {
-    console.log(WorkInProgress, '我是fiberRoot吗');
 
     const current = WorkInProgress.alternate;
     if (current !== null) {
-        console.log('是的，你是的')
     }
 
     if (current !== null) {

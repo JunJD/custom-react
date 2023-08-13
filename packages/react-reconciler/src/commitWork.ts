@@ -161,7 +161,6 @@ function recordHostChildToDelete(
     if (!lastOne) {
         childrenToDelete.push(unmountFiber);
     } else {
-        console.log("+++");
 
         // 2.每找到一个Host节点，判断一下第一步找到的节点的兄弟节点(同级)
         let node = lastOne.sibling;

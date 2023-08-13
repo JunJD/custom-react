@@ -38,3 +38,12 @@ export function insertChildToContainer(
 ) {
     container.insertBefore(child, before);
 }
+
+
+// 调度微任务
+export const scheduleMicroTask =
+    typeof queueMicrotask === 'function'
+        ? queueMicrotask
+        : typeof Promise === 'function'
+            ? (callback: any) => { Promise.resolve().then(callback) }
+            : setTimeout

@@ -121,7 +121,7 @@ function childReconciler(shouldTrackEffects: boolean) {
         if (shouldTrackEffects && fiber.alternate === null) {
             // 首屏渲染
             fiber.flags |= Placement;
-            console.log("首屏渲染");
+            console.log("首屏渲染2");
         }
         return fiber;
     }

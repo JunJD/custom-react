@@ -22,6 +22,7 @@ export function updateContainer(
     element: ReactElementType | null,
     root: FiberRootNode
 ) {
+    console.log('updateContainer ing')
     const hostRootFiber = root.current;
     const lane = requestUpdateLane()
     const update = createUpdate<ReactElementType | null>(element, lane);

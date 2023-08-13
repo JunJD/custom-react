@@ -10,7 +10,7 @@ import {
 } from "./updateQueue";
 import { Action } from "shared/ReactTypes";
 import { scheduleUpdateOnFiber } from "./workLoop";
-import { requestUpdateLane } from "./fiberLanes";
+import { Lane, NoLane, requestUpdateLane } from "./fiberLanes";
 
 let currentlyRenderingFiber: FiberNode | null = null;
 
@@ -18,7 +18,7 @@ let currentlyRenderingFiber: FiberNode | null = null;
 let workInProgressHook: Hook | null = null;
 // 双缓存技术
 let currentHook: Hook | null = null;
-
+let renderLane: Lane = NoLane
 const { currentDispatcher } = internals;
 
 interface Hook {
@@ -29,13 +29,13 @@ interface Hook {
 }
 
 // 入口函数，在生成子fiber时调用
-export function renderWithHooks(workInProgress: FiberNode) {
+export function renderWithHooks(workInProgress: FiberNode, lane: Lane) {
     currentlyRenderingFiber = workInProgress;
     workInProgress.memorizedState = null;
 
     // 取值
     const current = workInProgress.alternate;
-
+    renderLane = lane
     if (current !== null) {
         // update
         currentDispatcher.current = HooksDispatcherOnUpdate;
@@ -52,6 +52,7 @@ export function renderWithHooks(workInProgress: FiberNode) {
     // 重置操作
     currentlyRenderingFiber = null;
     currentHook = null;
+    renderLane = NoLane
     workInProgressHook = null;
     return children;
 }
@@ -103,11 +104,15 @@ function updateState<State>(): [State, Dispatch<State>] {
     const queue = hook.updateQueue as UpdateQueue<State>;
 
     const pending = queue.shared.pending;
+    // !!!bugfix,如果不把queue.shaed.pending,会导致下次批处理的时候，复用了之前的update
+    // 当渲染到这个usestate的时候将queue.shared.pending清空
+    queue.shared.pending = null
 
     if (pending !== null) {
         const { memorizedState } = processUpdateQueue(
             hook.memorizedState,
-            pending
+            pending,
+            renderLane
         );
         hook.memorizedState = memorizedState;
     }

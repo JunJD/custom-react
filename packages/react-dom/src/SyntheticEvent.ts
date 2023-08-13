@@ -26,7 +26,7 @@ export function initEvent(container: Container, eventType: string) {
         console.warn("当前不支持==>", eventType);
     }
     if (__DEV__) {
-        console.log("初始化事件：", eventType);
+        console.log("初始化事件111：", eventType);
     }
 
     container.addEventListener(eventType, (e: Event) => {
