@@ -3,3 +3,5 @@
 /packages/react-reconciler/node_modules
 /packages/react-dom/node_modules
 .DS_Store
+dist/node_modules/react
+dist/node_modules/react-dom
