@@ -3,6 +3,7 @@ import { Action } from "shared/ReactTypes";
 export interface Dispatcher {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     useState: <T>(initialState: T | (() => T)) => [T, Dispatch<T>];
+    useEffect: (callback: () => void | void, deps: any) => void
 }
 
 export type Dispatch<state> = (action: Action<state>) => void;

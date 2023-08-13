@@ -1,9 +1,18 @@
 import React, { useState } from "react";
+import { useEffect } from "react";
 import ReactDom from "react-dom";
 
 function APP() {
     const [num, setNum] = useState(1);
-
+    useEffect(() => {
+        console.log('effect!!!')
+    }, [])
+    useEffect(() => {
+        console.log('num change create', num)
+        return () => {
+            console.log('num change destory', num)
+        }
+    }, [num])
     const arr =
         num % 2 !== 0
             ? [<li key="1">1</li>, <li key="2">2</li>, <li key="3">3</li>]
@@ -13,8 +22,6 @@ function APP() {
         <>
             <ul
                 onClick={() => {
-                    setNum(num => num + 1);
-                    setNum(num => num + 1);
                     setNum(num => num + 1);
                     console.log('同步', document.querySelector('li')?.innerText);
                     Promise.resolve().then(() => {
@@ -33,8 +40,19 @@ function APP() {
                 {arr}
             </ul>
             <li>{num}</li>
+            {num % 2 === 0 && <Child />}
         </>
     );
+}
+
+function Child() {
+    useEffect(() => {
+        console.log('child create')
+        return () => {
+            console.log('child destory')
+        }
+    }, [])
+    return <>'i am child'</>
 }
 
 // console.log(Child());

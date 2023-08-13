@@ -8,6 +8,7 @@ import {
 import { Flags, NoFlags } from "./fiberFlags";
 import { Container } from "hostConfig";
 import { Lane, Lanes, NoLane, NoLanes } from "./fiberLanes";
+import { Effect } from "./fiberHooks";
 
 export class FiberNode {
     tag: WorkTag;
@@ -67,6 +68,11 @@ export class FiberNode {
     }
 }
 
+export interface PendingPassiveEffect {
+    unmount: Effect[];
+    update: Effect[]
+}
+
 export class FiberRootNode {
     container: Container;
     // 指向第一个FiberNode节点
@@ -76,6 +82,7 @@ export class FiberRootNode {
 
     pendingLanes: Lanes;
     finishedLane: Lane;
+    pendingPassiveEffects: PendingPassiveEffect;
     constructor(container: Container, hostRootFiber: FiberNode) {
         this.container = container;
         this.current = hostRootFiber;
@@ -83,6 +90,10 @@ export class FiberRootNode {
         this.finishedWork = null;
         this.pendingLanes = NoLanes;
         this.finishedLane = NoLane;
+        this.pendingPassiveEffects = {
+            unmount: [],
+            update: []
+        }
     }
 }
 
